@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchLatestMovies } from '@/store/slices/movieSlice';
 import Hero from '@/components/movies/Hero';
 import MovieList from '@/components/movies/MovieList';
+import FilterExplorer from '@/components/filters/FilterExplorer';
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
@@ -33,6 +34,8 @@ export default function HomePage() {
       {/* Hero Section */}
       {featuredMovie && <Hero movie={featuredMovie} />}
 
+      <FilterExplorer />
+
       {/* Movie Lists */}
       <div className="container mx-auto py-8">
         {trendingMovies.length > 0 && (
@@ -51,4 +54,6 @@ export default function HomePage() {
     </div>
   );
 }
+
+
 

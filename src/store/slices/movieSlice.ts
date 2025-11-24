@@ -152,3 +152,5 @@ const movieSlice = createSlice({
 export const { clearSearchResults, clearCurrentMovie, setFeaturedMovie } = movieSlice.actions;
 export default movieSlice.reducer;
 
+
+

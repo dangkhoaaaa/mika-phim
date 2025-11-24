@@ -93,3 +93,5 @@ const Hero = ({ movie }: HeroProps) => {
 
 export default Hero;
 
+
+

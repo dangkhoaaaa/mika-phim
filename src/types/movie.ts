@@ -42,6 +42,12 @@ export interface Country {
   slug: string;
 }
 
+export interface FilterOption {
+  _id: string;
+  name: string;
+  slug: string;
+}
+
 export interface MovieListResponse {
   status: boolean;
   items: Movie[];
@@ -69,6 +75,24 @@ export interface MovieDetailResponse {
   msg: string;
   movie: Movie;
   episodes: Episode[];
+}
+
+export interface CollectionResponse {
+  status: boolean;
+  msg: string;
+  data: {
+    items: Movie[];
+    titlePage?: string;
+    seoOnPage?: any;
+    breadCrumb?: any[];
+    pagination?: MovieListResponse['pagination'];
+    params?: {
+      pagination: MovieListResponse['pagination'];
+    };
+    APP_DOMAIN_FRONTEND?: string;
+    APP_DOMAIN_CDN_IMAGE?: string;
+    [key: string]: any;
+  };
 }
 
 export interface Episode {

@@ -74,6 +74,15 @@ const Header = () => {
             <Link href="/hoat-hinh" className="text-white hover:text-gray-300 transition">
               Hoạt hình
             </Link>
+            <Link href="/the-loai" className="text-white hover:text-gray-300 transition">
+              Thể loại
+            </Link>
+            <Link href="/quoc-gia" className="text-white hover:text-gray-300 transition">
+              Quốc gia
+            </Link>
+            <Link href="/nam" className="text-white hover:text-gray-300 transition">
+              Năm phát hành
+            </Link>
           </nav>
 
           {/* Search and Menu */}
@@ -152,6 +161,27 @@ const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Hoạt hình
+              </Link>
+              <Link
+                href="/the-loai"
+                className="text-white hover:text-gray-300 transition"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Thể loại
+              </Link>
+              <Link
+                href="/quoc-gia"
+                className="text-white hover:text-gray-300 transition"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Quốc gia
+              </Link>
+              <Link
+                href="/nam"
+                className="text-white hover:text-gray-300 transition"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Năm phát hành
               </Link>
             </nav>
           </div>

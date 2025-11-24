@@ -1,5 +1,48 @@
 import api from './api';
-import { MovieListResponse, MovieDetail, SearchParams, Movie, SearchResponse, MovieDetailResponse } from '@/types/movie';
+import {
+  MovieListResponse,
+  MovieDetail,
+  SearchParams,
+  SearchResponse,
+  MovieDetailResponse,
+  FilterOption,
+  CollectionResponse,
+} from '@/types/movie';
+
+const defaultPagination = (params?: SearchParams): MovieListResponse['pagination'] => ({
+  totalItems: 0,
+  totalItemsPerPage: params?.limit ?? 24,
+  currentPage: params?.page ?? 1,
+  totalPages: 1,
+});
+
+const transformCollectionResponse = (
+  payload: CollectionResponse,
+  params?: SearchParams
+): MovieListResponse => {
+  if (payload.status && payload.data) {
+    const pagination =
+      payload.data.pagination ||
+      payload.data.params?.pagination ||
+      defaultPagination(params);
+
+    return {
+      status: true,
+      items: payload.data.items || [],
+      pagination,
+      pathImage: payload.data.APP_DOMAIN_CDN_IMAGE || '',
+      titlePage: payload.data.titlePage || '',
+    };
+  }
+
+  return {
+    status: false,
+    items: [],
+    pagination: defaultPagination(params),
+    pathImage: '',
+    titlePage: '',
+  };
+};
 
 export const movieService = {
   // Lấy danh sách phim mới cập nhật
@@ -52,8 +95,8 @@ export const movieService = {
     const queryString = queryParams.toString();
     const endpoint = `/v1/api/danh-sach/${typeList}${queryString ? `?${queryString}` : ''}`;
     
-    const response = await api.get<MovieListResponse>(endpoint);
-    return response.data;
+    const response = await api.get<CollectionResponse>(endpoint);
+    return transformCollectionResponse(response.data, params);
   },
 
   // Tìm kiếm phim
@@ -109,8 +152,8 @@ export const movieService = {
   },
 
   // Lấy danh sách thể loại
-  getCategories: async (): Promise<any[]> => {
-    const response = await api.get<any[]>('/the-loai');
+  getCategories: async (): Promise<FilterOption[]> => {
+    const response = await api.get<FilterOption[]>('/the-loai');
     return response.data;
   },
 
@@ -132,13 +175,13 @@ export const movieService = {
     const queryString = queryParams.toString();
     const endpoint = `/v1/api/the-loai/${categorySlug}${queryString ? `?${queryString}` : ''}`;
     
-    const response = await api.get<MovieListResponse>(endpoint);
-    return response.data;
+    const response = await api.get<CollectionResponse>(endpoint);
+    return transformCollectionResponse(response.data, params);
   },
 
   // Lấy danh sách quốc gia
-  getCountries: async (): Promise<any[]> => {
-    const response = await api.get<any[]>('/quoc-gia');
+  getCountries: async (): Promise<FilterOption[]> => {
+    const response = await api.get<FilterOption[]>('/quoc-gia');
     return response.data;
   },
 
@@ -160,8 +203,8 @@ export const movieService = {
     const queryString = queryParams.toString();
     const endpoint = `/v1/api/quoc-gia/${countrySlug}${queryString ? `?${queryString}` : ''}`;
     
-    const response = await api.get<MovieListResponse>(endpoint);
-    return response.data;
+    const response = await api.get<CollectionResponse>(endpoint);
+    return transformCollectionResponse(response.data, params);
   },
 
   // Lấy phim theo năm
@@ -182,8 +225,8 @@ export const movieService = {
     const queryString = queryParams.toString();
     const endpoint = `/v1/api/nam/${year}${queryString ? `?${queryString}` : ''}`;
     
-    const response = await api.get<MovieListResponse>(endpoint);
-    return response.data;
+    const response = await api.get<CollectionResponse>(endpoint);
+    return transformCollectionResponse(response.data, params);
   },
 
   // Chuyển đổi ảnh sang WEBP

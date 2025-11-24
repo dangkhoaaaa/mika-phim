@@ -197,7 +197,12 @@ export default function MovieDetailPage() {
                 {currentMovie.year && (
                   <div className="flex items-center space-x-2 text-gray-300 text-sm">
                     <FiCalendar size={16} />
-                    <span>Năm: {currentMovie.year}</span>
+                    <Link
+                      href={`/nam/${currentMovie.year}`}
+                      className="hover:text-netflix-red transition-colors"
+                    >
+                      Năm: {currentMovie.year}
+                    </Link>
                   </div>
                 )}
                 {currentMovie.time && (
@@ -228,12 +233,13 @@ export default function MovieDetailPage() {
                     <h3 className="text-white font-semibold mb-1.5 text-sm">Thể loại:</h3>
                     <div className="flex flex-wrap gap-1.5">
                       {currentMovie.category.map((cat) => (
-                        <span
+                        <Link
+                          href={`/the-loai/${cat.slug}`}
                           key={cat.id}
-                          className="bg-netflix-red text-white px-2 py-0.5 rounded text-xs"
+                          className="bg-netflix-red text-white px-2 py-0.5 rounded text-xs hover:bg-netflix-red/80 transition-colors"
                         >
                           {cat.name}
-                        </span>
+                        </Link>
                       ))}
                     </div>
                   </div>
@@ -244,12 +250,13 @@ export default function MovieDetailPage() {
                     <h3 className="text-white font-semibold mb-1.5 text-sm">Quốc gia:</h3>
                     <div className="flex flex-wrap gap-1.5">
                       {currentMovie.country.map((country) => (
-                        <span
+                        <Link
+                          href={`/quoc-gia/${country.slug}`}
                           key={country.id}
-                          className="bg-netflix-gray text-white px-2 py-0.5 rounded text-xs"
+                          className="bg-netflix-gray text-white px-2 py-0.5 rounded text-xs hover:bg-netflix-gray/70 transition-colors"
                         >
                           {country.name}
-                        </span>
+                        </Link>
                       ))}
                     </div>
                   </div>

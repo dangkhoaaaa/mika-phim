@@ -72,3 +72,5 @@ const MovieCard = ({ movie, isLarge = false }: MovieCardProps) => {
 };
 
 export default MovieCard;
+
+

@@ -30,3 +30,5 @@ Write-Host "   git branch -M main" -ForegroundColor Yellow
 Write-Host "   git push -u origin main" -ForegroundColor Yellow
 Write-Host "`nHoặc xem file DEPLOY.md để biết chi tiết hơn." -ForegroundColor Cyan
 
+
+
