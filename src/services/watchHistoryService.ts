@@ -24,6 +24,7 @@ export interface WatchHistory {
   contentId: string;
   contentTitle: string;
   contentThumb: string;
+  contentSlug?: string;
   episodeId?: string;
   episodeName?: string;
   chapterId?: string;

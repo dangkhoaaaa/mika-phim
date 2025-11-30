@@ -20,7 +20,7 @@ export default function FavoritesPage() {
       return;
     }
     loadFavorites();
-  }, []);
+  }, [router]);
 
   const loadFavorites = async () => {
     try {
