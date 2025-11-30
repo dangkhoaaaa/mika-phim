@@ -10,6 +10,11 @@ import { getMovieImage } from '@/utils/imageUtils';
 import { Episode, ServerData } from '@/types/movie';
 import { FiPlay, FiCalendar, FiClock, FiGlobe } from 'react-icons/fi';
 import dynamic from 'next/dynamic';
+import CommentsSection from '@/components/comments/CommentsSection';
+import RatingSection from '@/components/ratings/RatingSection';
+import FavoriteButton from '@/components/favorites/FavoriteButton';
+import { watchHistoryService } from '@/services/watchHistoryService';
+import { authService } from '@/services/authService';
 
 const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
 
@@ -58,9 +63,25 @@ export default function MovieDetailPage() {
   const imageUrl = getMovieImage(currentMovie);
   const episodes = currentMovie.episodes || currentMovie.episodesSub || currentMovie.episodesVo || [];
 
-  const handlePlayEpisode = (episode: ServerData) => {
+  const handlePlayEpisode = async (episode: ServerData) => {
     setSelectedEpisode(episode);
     setShowPlayer(true);
+    
+    // Save watch history if authenticated
+    if (authService.isAuthenticated() && currentMovie) {
+      try {
+        await watchHistoryService.createOrUpdate({
+          contentType: 'movie',
+          contentId: currentMovie._id || slug,
+          contentTitle: currentMovie.name,
+          contentThumb: getMovieImage(currentMovie),
+          episodeId: episode.slug,
+          episodeName: episode.name,
+        });
+      } catch (error) {
+        console.error('Failed to save watch history:', error);
+      }
+    }
   };
 
   return (
@@ -86,8 +107,17 @@ export default function MovieDetailPage() {
                 {currentMovie.name}
               </h1>
               {currentMovie.origin_name && currentMovie.origin_name !== currentMovie.name && (
-                <p className="text-lg text-gray-300">{currentMovie.origin_name}</p>
+                <p className="text-lg text-gray-300 mb-4">{currentMovie.origin_name}</p>
               )}
+              <div className="flex items-center gap-4 mt-4">
+                <FavoriteButton
+                  contentType="movie"
+                  contentId={currentMovie._id || slug}
+                  contentTitle={currentMovie.name}
+                  contentThumb={imageUrl}
+                  contentSlug={slug}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -163,6 +193,31 @@ export default function MovieDetailPage() {
                       width="100%"
                       height="100%"
                       playing
+                      onProgress={async (state) => {
+                        // Auto-update watch history every 30 seconds
+                        if (authService.isAuthenticated() && currentMovie && state.playedSeconds > 0) {
+                          const playedSeconds = Math.floor(state.playedSeconds);
+                          const totalSeconds = state.loadedSeconds ? Math.floor(state.loadedSeconds) : 0;
+                          
+                          // Only update every 30 seconds to avoid too many API calls
+                          if (playedSeconds % 30 === 0) {
+                            try {
+                              await watchHistoryService.createOrUpdate({
+                                contentType: 'movie',
+                                contentId: currentMovie._id || slug,
+                                contentTitle: currentMovie.name,
+                                contentThumb: getMovieImage(currentMovie),
+                                episodeId: selectedEpisode.slug,
+                                episodeName: selectedEpisode.name,
+                                watchTime: playedSeconds,
+                                totalDuration: totalSeconds,
+                              });
+                            } catch (error) {
+                              console.error('Failed to update watch history:', error);
+                            }
+                          }
+                        }
+                      }}
                     />
                   ) : selectedEpisode.link_embed ? (
                     <iframe
@@ -279,6 +334,12 @@ export default function MovieDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* Ratings Section */}
+        <RatingSection contentType="movie" contentId={currentMovie._id || slug} />
+
+        {/* Comments Section */}
+        <CommentsSection contentType="movie" contentId={currentMovie._id || slug} />
       </div>
     </div>
   );

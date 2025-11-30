@@ -7,21 +7,37 @@ import { useRouter } from 'next/navigation';
 import { FiSearch, FiMenu, FiX } from 'react-icons/fi';
 import { useAppDispatch } from '@/store/hooks';
 import { searchMovies } from '@/store/slices/movieSlice';
+import { authService, getUserData } from '@/services/authService';
+import LoginModal from '@/components/auth/LoginModal';
+import RegisterModal from '@/components/auth/RegisterModal';
+import UserMenu from '@/components/user/UserMenu';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    setIsAuthenticated(authService.isAuthenticated());
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    // Listen for auth changes
+    const checkAuth = () => setIsAuthenticated(authService.isAuthenticated());
+    checkAuth();
+    const interval = setInterval(checkAuth, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -96,7 +112,7 @@ const Header = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Tìm kiếm phim..."
-                    className="bg-black/80 text-white px-4 py-2 rounded border border-gray-600 focus:outline-none focus:border-netflix-red w-64"
+                    className="bg-black/80 text-white px-4 py-2 rounded border border-gray-600 focus:outline-none focus:border-[#e50914] w-64"
                     autoFocus
                   />
                   <button
@@ -119,6 +135,26 @@ const Header = () => {
                 </button>
               )}
             </div>
+
+            {/* Auth Buttons / User Menu */}
+            {isAuthenticated ? (
+              <UserMenu />
+            ) : (
+              <div className="hidden md:flex items-center gap-3">
+                <button
+                  onClick={() => setShowLogin(true)}
+                  className="text-white hover:text-gray-300 transition"
+                >
+                  Đăng nhập
+                </button>
+                <button
+                  onClick={() => setShowRegister(true)}
+                  className="bg-[#e50914] text-white px-4 py-2 rounded hover:bg-[#f40612] transition"
+                >
+                  Đăng ký
+                </button>
+              </div>
+            )}
 
             {/* Mobile Menu Button */}
             <button
@@ -187,6 +223,24 @@ const Header = () => {
           </div>
         )}
       </div>
+
+      {/* Auth Modals */}
+      <LoginModal
+        isOpen={showLogin}
+        onClose={() => setShowLogin(false)}
+        onSwitchToRegister={() => {
+          setShowLogin(false);
+          setShowRegister(true);
+        }}
+      />
+      <RegisterModal
+        isOpen={showRegister}
+        onClose={() => setShowRegister(false)}
+        onSwitchToLogin={() => {
+          setShowRegister(false);
+          setShowLogin(true);
+        }}
+      />
     </header>
   );
 };

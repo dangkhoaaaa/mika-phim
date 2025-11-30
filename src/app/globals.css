@@ -12,7 +12,7 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  background-color: #000;
+  background-color: #141414;
   color: #fff;
 }
 
@@ -22,6 +22,15 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Netflix Color Variables */
+:root {
+  --netflix-red: #e50914;
+  --netflix-black: #141414;
+  --netflix-dark-gray: #2f2f2f;
+  --netflix-gray: #808080;
+  --netflix-light-gray: #b3b3b3;
 }
 
 a {
