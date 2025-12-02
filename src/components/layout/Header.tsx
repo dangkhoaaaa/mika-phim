@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { FiSearch, FiMenu, FiX } from 'react-icons/fi';
 import { useAppDispatch } from '@/store/hooks';
 import { searchMovies } from '@/store/slices/movieSlice';
-import { authService, getUserData } from '@/services/authService';
+import { authService } from '@/services/authService';
 import LoginModal from '@/components/auth/LoginModal';
 import RegisterModal from '@/components/auth/RegisterModal';
 import UserMenu from '@/components/user/UserMenu';
@@ -16,7 +16,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showSearch, setShowSearch] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -45,9 +45,13 @@ const Header = () => {
     if (searchQuery.trim()) {
       dispatch(searchMovies({ keyword: searchQuery, page: 1 }));
       router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setShowSearch(false);
+      setIsSearchOpen(false);
       setSearchQuery('');
     }
+  };
+
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
   };
 
   return (
@@ -103,38 +107,14 @@ const Header = () => {
 
           {/* Search, Auth, and Menu */}
           <div className="flex items-center space-x-4">
-            {/* Search */}
-            <div className="relative">
-              {showSearch ? (
-                <form onSubmit={handleSearch} className="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Tìm kiếm phim..."
-                    className="bg-black/80 text-white px-4 py-2 rounded border border-gray-600 focus:outline-none focus:border-[#e50914] w-48 sm:w-64"
-                    autoFocus
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowSearch(false);
-                      setSearchQuery('');
-                    }}
-                    className="text-white hover:text-gray-300"
-                  >
-                    <FiX size={20} />
-                  </button>
-                </form>
-              ) : (
-                <button
-                  onClick={() => setShowSearch(true)}
-                  className="text-white hover:text-gray-300 transition"
-                >
-                  <FiSearch size={20} />
-                </button>
-              )}
-            </div>
+            {/* Search Button */}
+            <button
+              onClick={toggleSearch}
+              className="p-2 hover:bg-gray-700 rounded-full transition-colors"
+              aria-label="Search"
+            >
+              <FiSearch className="w-5 h-5 text-white" />
+            </button>
 
             {/* Auth Section */}
             {isAuthenticated ? (
@@ -165,6 +145,28 @@ const Header = () => {
             </button>
           </div>
         </div>
+
+        {/* Search Bar */}
+        {isSearchOpen && (
+          <div className="py-4 border-t border-gray-800">
+            <form onSubmit={handleSearch} className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Tìm kiếm phim..."
+                className="flex-1 bg-gray-800 border border-gray-700 rounded px-4 py-2 text-white focus:outline-none focus:border-netflix-red"
+                autoFocus
+              />
+              <button
+                type="submit"
+                className="px-6 py-2 bg-netflix-red hover:bg-red-700 rounded transition-colors text-white"
+              >
+                Tìm
+              </button>
+            </form>
+          </div>
+        )}
 
         {/* Mobile Menu */}
         {isMenuOpen && (
@@ -231,8 +233,7 @@ const Header = () => {
                     className="w-full text-left bg-white text-black py-2 px-3 rounded hover:bg-gray-200 transition"
                   >
                     Đăng nhập
-                  </button>
-                  <button
+                  </button>                  <button
                     onClick={() => {
                       setShowRegister(true);
                       setIsMenuOpen(false);
