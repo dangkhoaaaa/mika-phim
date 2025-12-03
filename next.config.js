@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     domains: ['phimimg.com', 'phimapi.com'],
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
