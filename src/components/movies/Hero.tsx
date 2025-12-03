@@ -58,7 +58,7 @@ const Hero = ({ movie }: HeroProps) => {
               )}
               {movie.episode_current && (
                 <span className="bg-netflix-red text-white px-3 py-1 rounded text-sm font-bold">
-                  Tập {movie.episode_current}
+                  {movie.episode_current}
                   {movie.episode_total && ` / ${movie.episode_total}`}
                 </span>
               )}

@@ -47,7 +47,7 @@ const MovieCard = ({ movie, isLarge = false }: MovieCardProps) => {
 
           {movie.episode_current && (
             <div className="absolute top-2 right-2 bg-netflix-red text-white px-2 py-1 rounded text-xs font-bold">
-              Tập {movie.episode_current}
+              {movie.episode_current}
             </div>
           )}
 
