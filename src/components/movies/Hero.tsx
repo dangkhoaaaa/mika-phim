@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Movie } from '@/types/movie';
@@ -7,10 +8,27 @@ import { getMovieImage } from '@/utils/imageUtils';
 import { FiPlay, FiInfo } from 'react-icons/fi';
 
 interface HeroProps {
-  movie: Movie;
+  movies: Movie[];
 }
 
-const Hero = ({ movie }: HeroProps) => {
+const Hero = ({ movies }: HeroProps) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (movies.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % movies.length);
+    }, 5000); // Change movie every 5 seconds
+
+    return () => clearInterval(timer); // Cleanup on unmount
+  }, [movies.length]);
+
+  if (movies.length === 0) {
+    return null; // Don't render anything if there are no movies
+  }
+
+  const movie = movies[currentIndex];
   const imageUrl = getMovieImage(movie);
 
   return (
@@ -44,12 +62,13 @@ const Hero = ({ movie }: HeroProps) => {
             )}
             <div className="flex flex-wrap gap-2 mb-6">
               {movie.category?.slice(0, 3).map((cat) => (
-                <span
-                  key={cat.id}
-                  className="bg-white/20 text-white px-3 py-1 rounded text-sm"
-                >
-                  {cat.name}
-                </span>
+                <Link href={`/the-loai/${cat.slug}`} key={cat.id}>
+                  <span
+                    className="bg-white/20 text-white px-3 py-1 rounded text-sm cursor-pointer hover:bg-white/30 transition"
+                  >
+                    {cat.name}
+                  </span>
+                </Link>
               ))}
               {movie.year && (
                 <span className="bg-white/20 text-white px-3 py-1 rounded text-sm">

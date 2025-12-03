@@ -24,15 +24,15 @@ export default function HomePage() {
   }
 
   // Chia danh sách phim thành các nhóm để hiển thị
-  const featuredMovies = latestMovies.slice(0, 1);
-  const trendingMovies = latestMovies.slice(1, 11);
-  const newMovies = latestMovies.slice(11, 21);
-  const popularMovies = latestMovies.slice(21, 31);
+  const heroMovies = latestMovies.slice(0, 5);
+  const trendingMovies = latestMovies.slice(5, 15);
+  const newMovies = latestMovies.slice(15, 25);
+  const popularMovies = latestMovies.slice(25, 35);
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      {featuredMovie && <Hero movie={featuredMovie} />}
+      {heroMovies.length > 0 && <Hero movies={heroMovies} />}
 
       <FilterExplorer />
 
