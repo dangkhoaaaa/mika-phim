@@ -13,6 +13,7 @@ import dynamic from 'next/dynamic';
 import CommentsSection from '@/components/comments/CommentsSection';
 import RatingSection from '@/components/ratings/RatingSection';
 import FavoriteButton from '@/components/favorites/FavoriteButton';
+import WatchLaterButton from '@/components/watch-later/WatchLaterButton';
 import { watchHistoryService } from '@/services/watchHistoryService';
 import { authService } from '@/services/authService';
 
@@ -111,6 +112,13 @@ export default function MovieDetailPage() {
               )}
               <div className="flex items-center gap-4 mt-4">
                 <FavoriteButton
+                  contentType="movie"
+                  contentId={currentMovie._id || slug}
+                  contentTitle={currentMovie.name}
+                  contentThumb={imageUrl}
+                  contentSlug={slug}
+                />
+                <WatchLaterButton
                   contentType="movie"
                   contentId={currentMovie._id || slug}
                   contentTitle={currentMovie.name}

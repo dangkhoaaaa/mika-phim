@@ -1,6 +1,5 @@
-import axios from 'axios';
 import api from './api';
-import { getAuthToken } from './authService';
+import { createAuthApi } from './authService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -43,18 +42,6 @@ export interface WatchHistoryResponse {
   currentPage: number;
 }
 
-/**
- * Create authenticated axios instance
- */
-const createAuthApi = () => {
-  const token = getAuthToken();
-  return axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-      Authorization: token ? `Bearer ${token}` : '',
-    },
-  });
-};
 
 export const watchHistoryService = {
   /**

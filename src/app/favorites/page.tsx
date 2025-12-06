@@ -8,10 +8,14 @@ import { favoritesService, Favorite } from '@/services/favoritesService';
 import { authService } from '@/services/authService';
 import { FiTrash2, FiFilm, FiBook, FiHeart } from 'react-icons/fi';
 import { getMovieImage } from '@/utils/imageUtils';
+import Pagination from '@/components/common/Pagination';
 
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -20,18 +24,25 @@ export default function FavoritesPage() {
       return;
     }
     loadFavorites();
-  }, [router]);
+  }, [router, currentPage]);
 
   const loadFavorites = async () => {
     try {
       setLoading(true);
-      const response = await favoritesService.getFavorites('movie');
+      const response = await favoritesService.getFavorites('movie', currentPage, 20);
       setFavorites(response.items);
+      setTotalPages(response.totalPages);
+      setTotalItems(response.totalItems);
     } catch (error) {
       console.error('Failed to load favorites:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleRemove = async (contentId: string) => {
@@ -78,8 +89,9 @@ export default function FavoritesPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {favorites.map((item) => (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {favorites.map((item) => (
               <div
                 key={item._id}
                 className="group relative bg-[#2f2f2f] rounded-lg overflow-hidden hover:scale-105 transition-transform"
@@ -119,7 +131,15 @@ export default function FavoritesPage() {
                 </button>
               </div>
             ))}
-          </div>
+            </div>
+            {totalPages >= 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
+          </>
         )}
       </div>
     </div>
