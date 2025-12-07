@@ -27,12 +27,32 @@ export default function MovieDetailPage() {
   const [selectedServer, setSelectedServer] = useState<string>('');
   const [selectedEpisode, setSelectedEpisode] = useState<ServerData | null>(null);
   const [showPlayer, setShowPlayer] = useState(false);
+  const [watchHistory, setWatchHistory] = useState<any>(null);
 
   useEffect(() => {
     if (slug) {
       dispatch(fetchMovieDetail(slug));
     }
   }, [slug, dispatch]);
+
+  useEffect(() => {
+    const fetchWatchHistory = async () => {
+      if (authService.isAuthenticated() && currentMovie?._id) {
+        try {
+          const history = await watchHistoryService.getWatchHistoryByContentId(currentMovie._id);
+          if (history) {
+            setWatchHistory(history);
+          }
+        } catch (error) {
+          if ((error as any)?.response?.status !== 404) {
+            console.error('Failed to fetch watch history:', error);
+          }
+        }
+      }
+    };
+
+    fetchWatchHistory();
+  }, [currentMovie]);
 
   useEffect(() => {
     if (currentMovie) {
@@ -76,8 +96,11 @@ export default function MovieDetailPage() {
           contentId: currentMovie._id || slug,
           contentTitle: currentMovie.name,
           contentThumb: getMovieImage(currentMovie),
+          contentSlug: slug,
           episodeId: episode.slug,
           episodeName: episode.name,
+          episodeNumber: Number(episode.name.split(' ')[1]),
+          progress: 0,
         });
       } catch (error) {
         console.error('Failed to save watch history:', error);
@@ -125,6 +148,23 @@ export default function MovieDetailPage() {
                   contentThumb={imageUrl}
                   contentSlug={slug}
                 />
+                {watchHistory && (
+                  <button
+                    onClick={() => {
+                      const episode = episodes
+                        .flatMap((ep) => ep.server_data)
+                        .find((ep) => ep.slug === watchHistory.episodeId);
+                      if (episode) {
+                        handlePlayEpisode(episode);
+                      }
+                    }}
+                    className="inline-flex items-center px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg transition-colors"
+                  >
+                    <FiPlay className="mr-2" />
+                    Tiếp tục xem
+                    {watchHistory.episodeName && ` - ${watchHistory.episodeName}`}
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -215,10 +255,13 @@ export default function MovieDetailPage() {
                                 contentId: currentMovie._id || slug,
                                 contentTitle: currentMovie.name,
                                 contentThumb: getMovieImage(currentMovie),
+                                contentSlug: slug,
                                 episodeId: selectedEpisode.slug,
                                 episodeName: selectedEpisode.name,
-                                watchTime: playedSeconds,
+                                episodeNumber: Number(selectedEpisode.name.split(' ')[1]),
+                                duration: playedSeconds,
                                 totalDuration: totalSeconds,
+                                progress: totalSeconds > 0 ? (playedSeconds / totalSeconds) * 100 : 0,
                               });
                             } catch (error) {
                               console.error('Failed to update watch history:', error);
